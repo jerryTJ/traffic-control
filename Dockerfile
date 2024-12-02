@@ -18,7 +18,6 @@ WORKDIR /app/
 # Copy the compiled binary from the build stage
 # COPY --from=builder /app/deployments/tini /app/
 COPY --from=builder /app/proxy-traffic /app/proxy-traffic
-COPY --from=builder /app/bin/start.sh /app/start.sh
 # Command to run the application
 # ENTRYPOINT [ "/app/tini", "--" ]
-CMD ["/app/start.sh"]
+CMD ["/app/proxy-traffic"]

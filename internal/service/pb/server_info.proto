@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package app;
+
+option go_package = "grpc/;grpc";
+
+// request body
+message ServerRequest {
+  string name = 1;
+  string version = 2;
+  string domain = 3;
+  string port = 4;
+  string chain = 5;
+}
+
+// response body
+message ServerReply {
+  string color = 1;
+  string chain =2;
+  string domain =3;
+  string version= 4;
+  string name = 5;
+  string port = 6;
+}
+
+// defind service
+service ServerInfoService {
+  rpc GetColoringInfo(ServerRequest) returns (ServerReply);
+}
+
+// protoc --go_out=../ --go-grpc_out=../  server_info.proto

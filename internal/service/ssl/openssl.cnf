@@ -1,0 +1,16 @@
+[ req ]
+distinguished_name = req_distinguished_name
+req_extensions = v3_req
+
+[ req_distinguished_name ]
+commonName = jerry
+commonName_max = 64
+
+[ v3_req ]
+subjectAltName = @alt_names
+
+[ alt_names ]
+DNS.1 = localhost       # Add your hostname here
+DNS.2 = traffic.devops.com     # Additional hostnames (optional)
+DNS.3 = grpc.devops.com
+IP.1 = 127.0.0.1        # IP addresses (optional)

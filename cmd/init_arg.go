@@ -12,6 +12,7 @@ var (
 	DB_URL   string
 	Duration int64
 	Port     string
+	GrpcPort string
 	rootCmd  = &cobra.Command{
 		Use:   "metrics cron job",
 		Short: "metrics collector",
@@ -31,4 +32,5 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&DB_URL, "url", "host.docker.internal:3306", "db url")
 	rootCmd.PersistentFlags().Int64Var(&Duration, "duration", 5, "cache duration")
 	rootCmd.PersistentFlags().StringVar(&Port, "port", "8088", "listener ports")
+	rootCmd.PersistentFlags().StringVar(&GrpcPort, "gport", ":10080", "listener ports of grpc")
 }
