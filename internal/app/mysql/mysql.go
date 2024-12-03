@@ -5,7 +5,6 @@ import (
 	"log"
 	"time"
 
-	"github.com/jerryTJ/controller/internal/app/dao"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -24,11 +23,7 @@ const (
 	Dialect      = "mysql"
 )
 
-type DataSource struct {
-	db *gorm.DB
-}
-
-func NewDataSource() *DataSource {
+func CreateDB() *gorm.DB {
 	var db *gorm.DB
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8&parseTime=True&loc=Asia%%2FShanghai",
 		UserName, PassWord, Host, Port, Database)
@@ -55,12 +50,5 @@ func NewDataSource() *DataSource {
 	sqlDB.SetConnMaxIdleTime(MaxIdletime) // 设置连接最大空闲时间
 	stats := sqlDB.Stats()
 	log.Printf("Open connections: %d, In use: %d, Idle: %d\n", stats.OpenConnections, stats.InUse, stats.Idle)
-	return &DataSource{
-		db: db,
-	}
-}
-func (ds *DataSource) ServerInfoDao() dao.ServerDao {
-	return &dao.ServerDaoImpl{
-		DB: ds.db,
-	}
+	return db
 }

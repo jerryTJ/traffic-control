@@ -10,13 +10,14 @@ import (
 
 type ServerInfo struct {
 	pb.UnimplementedServerInfoServiceServer
-	dataSource *mysql.DataSource
+	daoFactory mysql.IDaoFactory
 }
 
 // 实现 SayHello 方法
 func (s *ServerInfo) GetColoringInfo(ctx context.Context, req *pb.ServerRequest) (*pb.ServerReply, error) {
 	log.Printf("Received: %v", req.GetName())
-	info, err := s.dataSource.ServerInfoDao().QueryByVersion(req.GetName(), req.GetVersion())
+	serverInfoDao := s.daoFactory.GetServerInfoDao()
+	info, err := serverInfoDao.QueryByVersion(req.GetName(), req.GetVersion())
 	if err != nil {
 		return &pb.ServerReply{}, nil
 	}

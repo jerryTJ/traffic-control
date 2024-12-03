@@ -8,9 +8,9 @@ import (
 
 type GrpcRegister struct {
 	GrpcServer *grpc.Server
-	DataSource *mysql.DataSource
+	DaoFactory mysql.IDaoFactory
 }
 
 func (gr *GrpcRegister) RegisterColoringService() {
-	pb.RegisterServerInfoServiceServer(gr.GrpcServer, &ServerInfo{dataSource: gr.DataSource})
+	pb.RegisterServerInfoServiceServer(gr.GrpcServer, &ServerInfo{daoFactory: gr.DaoFactory})
 }

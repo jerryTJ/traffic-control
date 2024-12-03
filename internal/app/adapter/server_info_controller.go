@@ -1,22 +1,29 @@
 package adapter
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 	"github.com/jerryTJ/controller/internal/app/mysql"
 )
 
 type ServerInfoController struct {
-	dataSource *mysql.DataSource
+	factory mysql.IDaoFactory
 }
 
-func NewServerInfoController(dataSource *mysql.DataSource) ServerInfoController {
+func NewServerInfoController(daoFactory mysql.IDaoFactory) ServerInfoController {
 	return ServerInfoController{
-		dataSource: dataSource,
+		factory: daoFactory,
 	}
-
 }
 func (ns *ServerInfoController) QueryServerInfos(ctx *gin.Context) {
 	name := ctx.Param("name")
 	version := ctx.Param("version")
-	ns.dataSource.ServerInfoDao().QueryByVersion(name, version)
+	serverInfoDao := ns.factory.GetServerInfoDao()
+	info, err := serverInfoDao.QueryByVersion(name, version)
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, info)
 }

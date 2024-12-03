@@ -24,15 +24,18 @@ func main() {
 	cmd.Execute()
 	//db.Init(cmd.DB_USER, cmd.DB_PWD, cmd.DB_URL, cmd.DB_NAME)
 	//init datasource
-	dataSource := mysql.NewDataSource()
+	factory := new(mysql.DaoFactory)
+	factory.DB = mysql.CreateDB()
+
 	grpcServer := pb.CreateGRPCServer()
-	grpcRegister := service.GrpcRegister{GrpcServer: grpcServer, DataSource: dataSource}
+	grpcRegister := service.GrpcRegister{GrpcServer: grpcServer, DaoFactory: factory}
 	grpcRegister.RegisterColoringService()
 	go pb.StartGrpcServer(grpcServer, cmd.GrpcPort)
-	createHtterServer(dataSource)
+
+	createHtterServer(factory)
 }
 
-func createHtterServer(dataSource *mysql.DataSource) {
+func createHtterServer(factory mysql.IDaoFactory) {
 	router := gin.Default()
 	gin.DisableConsoleColor()
 	gin.SetMode(gin.ReleaseMode)
@@ -59,7 +62,7 @@ func createHtterServer(dataSource *mysql.DataSource) {
 	router.Use(sessions.Sessions("session", store))
 
 	// register route
-	controller.InitServerController(router, dataSource)
+	controller.InitServerController(router, factory)
 
 	router.Use(Authorize())
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
