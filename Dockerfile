@@ -8,7 +8,7 @@ COPY . .
 COPY go.mod go.sum ./
 RUN go mod download
 # Build the application
-RUN go build -o proxy-traffic Application.go
+RUN go build -o controller Application.go
 # Stage 2: Runtime Stage
 FROM  alpine:3.20.3
 # Install necessary runtime dependencies
@@ -17,7 +17,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /app/
 # Copy the compiled binary from the build stage
 # COPY --from=builder /app/deployments/tini /app/
-COPY --from=builder /app/proxy-traffic /app/proxy-traffic
+COPY --from=builder /app/controller /app/controller
 # Command to run the application
 # ENTRYPOINT [ "/app/tini", "--" ]
-CMD ["/app/proxy-traffic"]
+CMD ["/app/controller"]

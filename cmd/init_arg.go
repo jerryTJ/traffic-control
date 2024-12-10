@@ -14,9 +14,9 @@ var (
 	Port     string
 	GrpcPort string
 	rootCmd  = &cobra.Command{
-		Use:   "metrics cron job",
-		Short: "metrics collector",
-		Long:  "metric of db, collect db metrics and push to pushgateway ",
+		Use:   "traffic controller",
+		Short: "traffic controller",
+		Long:  "traffic controller to manager server ,chain",
 	}
 )
 

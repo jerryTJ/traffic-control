@@ -27,3 +27,6 @@ func (ns *ServerInfoController) QueryServerInfos(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, info)
 }
+
+//add query chain
+//func ()

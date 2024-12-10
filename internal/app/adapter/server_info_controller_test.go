@@ -8,22 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jerryTJ/controller/internal/app/dao"
 	"github.com/jerryTJ/controller/internal/app/model"
+	"github.com/jerryTJ/controller/internal/app/mysql"
 	"github.com/stretchr/testify/assert"
 )
-
-type mockDaoFactory struct {
-	mockServerDao *dao.MockServerDao
-}
-
-func (df *mockDaoFactory) GetServerInfoDao() dao.ServerDao {
-	return df.mockServerDao
-}
 
 func TestQueryServerInfos(t *testing.T) {
 	// Setup
 	gin.SetMode(gin.TestMode)
 	mockDao := new(dao.MockServerDao)
-	mockDS := &mockDaoFactory{mockServerDao: mockDao}
+	mockDS := &mysql.MockDaoFactory{MockServerDao: mockDao}
 
 	tests := []struct {
 		name         string

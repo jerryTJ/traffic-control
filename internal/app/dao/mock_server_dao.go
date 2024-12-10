@@ -24,7 +24,7 @@ func (m *MockServerDao) Delete(server *model.ServerInfo) error {
 	return args.Error(0)
 }
 
-func (m *MockServerDao) List(server *model.ServerInfo) ([]model.ServerInfo, error) {
+func (m *MockServerDao) GetPaginatedServerInfos(server *model.ServerInfo, page, pageSize int) (serverinfos []model.ServerInfo, err error) {
 	args := m.Called(server)
 	return args.Get(0).([]model.ServerInfo), args.Error(1)
 }

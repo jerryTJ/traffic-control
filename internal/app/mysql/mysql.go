@@ -50,5 +50,6 @@ func CreateDB() *gorm.DB {
 	sqlDB.SetConnMaxIdleTime(MaxIdletime) // 设置连接最大空闲时间
 	stats := sqlDB.Stats()
 	log.Printf("Open connections: %d, In use: %d, Idle: %d\n", stats.OpenConnections, stats.InUse, stats.Idle)
+
 	return db
 }
