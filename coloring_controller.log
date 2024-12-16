@@ -1,2 +1,1 @@
-::1 - [Mon, 09 Dec 2024 18:15:38 CST] "GET /metrics HTTP/1.1 200 753.125µs "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" "
-::1 - [Mon, 09 Dec 2024 18:15:38 CST] "GET /favicon.ico HTTP/1.1 404 27µs "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" "
+::1 - [Mon, 16 Dec 2024 15:48:26 CST] "POST /v1/chains HTTP/1.1 200 39.585583ms "PostmanRuntime/7.43.0" "

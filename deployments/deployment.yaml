@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: service-watcher
+  namespace: default # 替换为实际命名空间
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: service-watcher-clusterrole
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["list", "watch"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: service-watcher-clusterrolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: service-watcher-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: service-watcher # 替换为你的 ServiceAccount 名字
+    namespace: default # 替换为你的命名空间
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: service-watcher
+  namespace: default # 替换为实际命名空间
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: service-watcher
+  template:
+    metadata:
+      labels:
+        app: service-watcher
+    spec:
+      serviceAccountName: service-watcher # 指定自定义 ServiceAccount
+      containers:
+        - name: service-watcher
+          image: your-docker-image:tag # 替换为实际镜像
+          imagePullPolicy: IfNotPresent

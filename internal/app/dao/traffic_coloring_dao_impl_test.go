@@ -2,6 +2,8 @@ package dao
 
 import (
 	"fmt"
+	"reflect"
+	"strconv"
 	"testing"
 
 	"github.com/jerryTJ/controller/internal/app/model"
@@ -100,6 +102,22 @@ func TestServerDaoImpl(t *testing.T) {
 		assert.NoError(t, err)
 		assert.Equal(t, server.Name, found.Name)
 	})
+	t.Run("BindChain", func(t *testing.T) {
+		server := &model.ServerInfo{
+			Name:    "version-test",
+			Version: "2.0",
+		}
+		err := dao.Add(server)
+		assert.NoError(t, err)
+		dao.BindChain(2, server.ID)
+		server, err = dao.ListById(server.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, uint(2), server.ChainId)
+		dao.UnBindChain(server.ID, 1)
+		server, err = dao.ListById(server.ID)
+		assert.NoError(t, err)
+		assert.Equal(t, uint(1), server.ChainId)
+	})
 }
 
 func TestChainDaoImpl(t *testing.T) {
@@ -145,20 +163,21 @@ func TestChainDaoImpl(t *testing.T) {
 
 	t.Run("AssociationServerInfo", func(t *testing.T) {
 		chain := model.Chain{
-			Name: "association-test",
+			Name:    "association-test",
+			IfClean: false,
 		}
-		err := dao.Add(&chain)
-		assert.NoError(t, err)
 
-		serverInfos := []model.ServerInfo{
-			{Namespace: "default", Name: "test1"},
-			{Namespace: "tc", Name: "test2"},
-		}
-		//for _, serverInfo := range serverInfos {
-		//daoServerInfo.Add(&serverInfo)
-		//}
-
-		err = dao.AssociationServerInfo(&chain, serverInfos)
+		si1 := model.ServerInfo{Namespace: "default", Name: "test1"}
+		si1.ID = 10
+		daoServerInfo.Add(&si1)
+		si2 := model.ServerInfo{Namespace: "default", Name: "test1"}
+		si2.ID = 20
+		daoServerInfo.Add(&si2)
+		serverInfos := []model.ServerInfo{si1, si2}
+		chain.ServerInfos = serverInfos
+		//err := dao.Add(&chain)
+		//assert.NoError(t, err)
+		err := dao.AssociationServerInfo(&chain, serverInfos)
 		assert.NoError(t, err)
 
 		results := dao.QueryServerInfos(chain.ID)
@@ -177,4 +196,31 @@ func TestChainDaoImpl(t *testing.T) {
 		assert.Equal(t, int64(93), paginated.TotalCount)
 		assert.Equal(t, 5, paginated.TotalPage)
 	})
+}
+func TestReflect(t *testing.T) {
+	t.Run(
+		"demo",
+		func(t *testing.T) {
+			var x int = 42
+			tp := reflect.TypeOf(x)
+			v := reflect.ValueOf(x)
+			fmt.Println("type:", tp)
+			fmt.Println("value:", v)
+
+			v = reflect.ValueOf(&x)
+			fmt.Printf("%p", &x)
+			hexStr := "140001acfb8"
+			decValue, _ := strconv.ParseInt(hexStr, 16, 64)
+			fmt.Printf("dec---%d", decValue)
+			hexStr = fmt.Sprintf("%x", decValue)
+			fmt.Printf("10进制 %d 转为16进制: %s\n", decValue, hexStr)
+
+			if v.Kind() == reflect.Pointer {
+				v = v.Elem()
+			}
+			v.SetInt(100)
+			fmt.Println(x)
+
+		},
+	)
 }

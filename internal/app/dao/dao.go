@@ -12,6 +12,8 @@ type ServerDao interface {
 	GetPaginatedServerInfos(server *model.ServerInfo, page, pageSize int) (list []model.ServerInfo, err error)
 	ListById(id uint) (server *model.ServerInfo, err error)
 	QueryByVersion(name string, version string) (server *model.ServerInfo, err error)
+	BindChain(chainId, serverId uint) error
+	UnBindChain(serverId, defaultChainId uint) error
 }
 
 type ChainDao interface {

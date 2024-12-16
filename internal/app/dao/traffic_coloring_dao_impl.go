@@ -54,6 +54,18 @@ func (si *ServerDaoImpl) QueryByVersion(name string, version string) (*model.Ser
 	return nil, errors.New("no match record")
 }
 
+func (si *ServerDaoImpl) BindChain(chainId, serverId uint) error {
+	var serverInfo = model.ServerInfo{ID: uint(serverId)}
+	updateResult := si.DB.Model(&serverInfo).UpdateColumn("chain_id", chainId)
+	if updateResult.RowsAffected != 1 {
+		return errors.New("bind error")
+	}
+	return nil
+}
+func (si *ServerDaoImpl) UnBindChain(serverId, defaultChainId uint) error {
+	return si.BindChain(defaultChainId, serverId)
+}
+
 type ChainDaoImpl struct {
 	DB *gorm.DB
 }
@@ -91,12 +103,15 @@ func (cd *ChainDaoImpl) QueryServerInfos(chainID uint) []model.ServerInfo {
 	}
 	return nil
 }
+
+// many2many
 func (cd *ChainDaoImpl) AssociationServerInfo(chain *model.Chain, serverInfos []model.ServerInfo) error {
-	for _, serverinfo := range serverInfos {
-		err := cd.DB.Model(&chain).Association("ServerInfos").Append(&serverinfo)
-		if err != nil {
-			return err
-		}
+	if chain.IfClean {
+		cd.DB.Model(&chain).Association("ServerInfos").Clear()
+	}
+	err := cd.DB.Model(&chain).Association("ServerInfos").Replace(serverInfos)
+	if err != nil {
+		return err
 	}
 	return nil
 }

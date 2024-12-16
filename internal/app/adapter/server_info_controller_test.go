@@ -1,6 +1,7 @@
 package adapter
 
 import (
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -43,19 +44,19 @@ func TestQueryServerInfos(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// Setup mock expectations
-			mockDao.On("QueryByVersion", tt.serverName, tt.version).
-				Return(tt.mockResponse, tt.mockError)
+			mockDao.On("QueryByVersion", tt.serverName, tt.version).Return(tt.mockResponse, tt.mockError)
 
 			// Setup router
 			router := gin.New()
-			controller := NewServerInfoController(mockDS)
+			controller := CreateTrafficColorController(mockDS)
 			router.GET("/:name/:version", controller.QueryServerInfos)
 
 			// Create request
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", "/"+tt.serverName+"/"+tt.version, nil)
 			router.ServeHTTP(w, req)
-
+			serverInfo := new(model.ServerInfo)
+			json.Unmarshal(w.Body.Bytes(), serverInfo)
 			// Assert
 			assert.Equal(t, tt.expectedCode, w.Code)
 			mockDao.AssertExpectations(t)

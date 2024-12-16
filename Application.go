@@ -24,18 +24,17 @@ func main() {
 	cmd.Execute()
 	//db.Init(cmd.DB_USER, cmd.DB_PWD, cmd.DB_URL, cmd.DB_NAME)
 	//init datasource
-	factory := new(mysql.DaoFactory)
-	factory.DB = mysql.CreateDB()
-
+	service.Start("/Users/jerry/.kube/config")
+	factory := mysql.DaoFactory{DB: mysql.CreateDB()}
 	grpcServer := pb.CreateGRPCServer()
-	grpcRegister := service.GrpcRegister{GrpcServer: grpcServer, DaoFactory: factory}
+	grpcRegister := service.GrpcRegister{GrpcServer: grpcServer, DaoFactory: &factory}
 	grpcRegister.RegisterColoringService()
 	go pb.StartGrpcServer(grpcServer, cmd.GrpcPort)
 
-	createHtterServer(factory)
+	createHttpServer(&factory)
 }
 
-func createHtterServer(factory mysql.IDaoFactory) {
+func createHttpServer(factory mysql.IDaoFactory) {
 	router := gin.Default()
 	gin.DisableConsoleColor()
 	gin.SetMode(gin.ReleaseMode)
@@ -62,7 +61,7 @@ func createHtterServer(factory mysql.IDaoFactory) {
 	router.Use(sessions.Sessions("session", store))
 
 	// register route
-	controller.InitServerController(router, factory)
+	controller.BindController(router, factory)
 
 	router.Use(Authorize())
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))

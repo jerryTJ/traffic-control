@@ -41,3 +41,11 @@ func (m *MockServerDao) QueryByVersion(name string, version string) (*model.Serv
 	}
 	return args.Get(0).(*model.ServerInfo), args.Error(1)
 }
+
+func (m *MockServerDao) BindChain(chainId, serverId uint) error {
+	args := m.Called(chainId, serverId)
+	return args.Error(0)
+}
+func (m *MockServerDao) UnBindChain(serverId, defaultChainId uint) error {
+	return m.BindChain(defaultChainId, serverId)
+}
